@@ -1,0 +1,40 @@
+If godaddy error comming in log ( ON PROD_SERVER)
+Download the go daddy ssl certificate type other and extracted in C:\Users\HP\Pictures\MOJO_SSL
+
+Now on server got to search box in mobaxteam in directive /tmp/ and  select upload key and upload the certificate  C:\Users\HP\Pictures\MOJO_SSL
+
+and run the command 
+cd /tmp/
+ls 
+ cat 9568dba19e94ad65.crt  gd_bundle-g2-g1.crt >chain.crt
+ls
+vim /etc/nginx/nginx.conf find the certificate directory
+that is /root/new_mojo
+cp -rf chain.crt /root/new_mojo/
+cd /root/new_mojo/
+mv chain_mojo.crt  cc.crt
+mv chain.crt chain_mojo.crt
+nginx -t
+systemctl restart nginx && systemctl status nginx
+aws s3 cp  chain_mojo.crt s3://cred-mojo/27/ copy this key to se bucket so we can used this key for other server
+
+on PRE_PROD_SERVER
+
+cd /root/new_mojo/
+ls
+aws s3 cp --recursive s3://cred-mojo/27/ . copy certificate to /root/new_mojo folder
+nginx -t
+rm -rf chain_mojo.crt
+aws s3 cp --recursive s3://cred-mojo/27/ .
+
+On Bookairportcab server .77
+cd /root/new_mojo/
+aws s3 cp --recursive s3://cred-mojo/27/ .
+nginx -t
+systemctl restart nginx && systemctl status nginx
+
+Inside /root/new_mojo directory run command
+
+
+
+aws s3 cp --recursive s3://cred-mojo/27/ .
